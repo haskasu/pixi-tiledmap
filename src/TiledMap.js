@@ -5,20 +5,19 @@ import path from 'path';
 
 export default class TiledMap extends PIXI.Container {
 
-    constructor(resourceUrl) {
+    constructor(resource) {
         super();
 
-        this.resourceUrl = resourceUrl;
         this.tileSets = [];
         this.layers = [];
         this.background = new PIXI.Graphics();
 
-        this.create();
+        this.create(resource);
     }
 
-    create() {
-        const route = path.dirname(PIXI.loader.resources[this.resourceUrl].url);
-        const data = PIXI.loader.resources[this.resourceUrl].data;
+    create(resource) {
+        const route = path.dirname(resource.url);
+        const data = resource.data;
 
         Object.assign(this, data);
 

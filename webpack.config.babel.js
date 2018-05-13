@@ -2,10 +2,13 @@ import path from 'path';
 import webpack from 'webpack';
 
 export default {
-    entry: './src/index.js',
+    entry: {
+        'pixi-tiledmap': './src/index.js',
+        'pixi-tiledmap.min': './src/index.js'
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'pixi-tiledmap.min.js',
+        filename: '[name].js',
         libraryTarget: 'umd',
         library: 'pixi-tiledmap'
     },
@@ -19,7 +22,10 @@ export default {
     },
     target: 'web',
     plugins: [
-        new webpack.optimize.UglifyJsPlugin({ sourceMap: true })
+        new webpack.optimize.UglifyJsPlugin({
+            include: /\.min.js$/,
+            sourceMap: true
+        })
     ],
     devtool: 'source-map',
     node: {

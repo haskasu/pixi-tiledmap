@@ -7791,9 +7791,9 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _tiledMapLoader = __webpack_require__(30);
+var _TmxLoader = __webpack_require__(30);
 
-var _tiledMapLoader2 = _interopRequireDefault(_tiledMapLoader);
+var _TmxLoader2 = _interopRequireDefault(_TmxLoader);
 
 var _TiledMap = __webpack_require__(58);
 
@@ -7821,8 +7821,8 @@ var _tmxParser2 = _interopRequireDefault(_tmxParser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-PIXI.loaders.Loader.addPixiMiddleware(_tiledMapLoader2.default);
-PIXI.loader.use((0, _tiledMapLoader2.default)());
+PIXI.loaders.Loader.addPixiMiddleware(_TmxLoader2.default.pixiMiddleware);
+PIXI.loader.use(_TmxLoader2.default.pixiMiddleware());
 
 exports.default = PIXI.extras.tiled = {
     TiledMap: _TiledMap2.default,
@@ -7830,6 +7830,7 @@ exports.default = PIXI.extras.tiled = {
     Tile: _Tile2.default,
     TileLayer: _TileLayer2.default,
     ImageLayer: _ImageLayer2.default,
+    TmxLoader: _TmxLoader2.default,
     tmx: _tmxParser2.default
 };
 
@@ -7844,6 +7845,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _path = __webpack_require__(9);
 
 var _path2 = _interopRequireDefault(_path);
@@ -7854,40 +7857,61 @@ var _tmxParser2 = _interopRequireDefault(_tmxParser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function () {
-    return function (resource, next) {
-        var _this = this;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-        if (!resource.data || resource.type !== PIXI.loaders.Resource.TYPE.XML || !resource.data.children[0].getElementsByTagName('tileset')) {
-            return next();
+var TmxLoader = function () {
+    function TmxLoader() {
+        _classCallCheck(this, TmxLoader);
+    }
+
+    _createClass(TmxLoader, [{
+        key: 'getImageLoadOptions',
+        value: function getImageLoadOptions(resource) {
+            return {
+                crossOrigin: resource.crossOrigin,
+                loadType: PIXI.loaders.Resource.LOAD_TYPE.IMAGE,
+                parentResource: resource
+            };
         }
+    }, {
+        key: 'onLoadTileset',
+        value: function onLoadTileset(loader, route, tileset, loadOptions) {
+            if (!(tileset.image.source in loader.resources)) {
+                loader.add(tileset.image.source, route + '/' + tileset.image.source, loadOptions);
+            }
+        }
+    }], [{
+        key: 'pixiMiddleware',
+        value: function pixiMiddleware() {
+            return function (resource, next) {
+                var _this = this;
 
-        var route = _path2.default.dirname(resource.url.replace(this.baseUrl, ''));
-
-        var loadOptions = {
-            crossOrigin: resource.crossOrigin,
-            loadType: PIXI.loaders.Resource.LOAD_TYPE.IMAGE,
-            parentResource: resource
-        };
-
-        _tmxParser2.default.parse(resource.xhr.responseText, route, function (err, map) {
-            if (err) throw err;
-
-            map.tileSets.forEach(function (tileset) {
-                if (!(tileset.image.source in _this.resources)) {
-                    if (/^(http:\/\/|https:\/\/)/.test(tileset.image.source)) {
-                        _this.add(tileset.image.source, tileset.image.source, loadOptions);
-                    } else {
-                        _this.add(tileset.image.source, route + '/' + tileset.image.source, loadOptions);
-                    }
+                if (!resource.data || resource.type !== PIXI.loaders.Resource.TYPE.XML || !resource.data.children[0].getElementsByTagName('tileset')) {
+                    return next();
                 }
-            });
 
-            resource.data = map;
-            next();
-        });
-    };
-};
+                var tmxLoader = new TmxLoader();
+                var route = _path2.default.dirname(resource.url.replace(this.baseUrl, ''));
+                var loadOptions = tmxLoader.getImageLoadOptions(resource);
+
+                _tmxParser2.default.parse(resource.xhr.responseText, route, function (err, map) {
+                    if (err) throw err;
+
+                    map.tileSets.forEach(function (tileset) {
+                        tmxLoader.onLoadTileset(_this, route, tileset, loadOptions);
+                    });
+
+                    resource.data = map;
+                    next();
+                });
+            };
+        }
+    }]);
+
+    return TmxLoader;
+}();
+
+exports.default = TmxLoader;
 
 /***/ }),
 /* 31 */

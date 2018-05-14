@@ -7860,13 +7860,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var TmxLoader = function () {
-    function TmxLoader(route) {
+    function TmxLoader(tmxUrl) {
         _classCallCheck(this, TmxLoader);
 
-        this.route = route;
+        this.route = this.parseRoute(tmxUrl);
     }
 
     _createClass(TmxLoader, [{
+        key: 'parseRoute',
+        value: function parseRoute(tmxUrl) {
+            return _path2.default.dirname(tmxUrl.replace(this.baseUrl, ''));
+        }
+    }, {
         key: 'getImageLoadOptions',
         value: function getImageLoadOptions(resource) {
             return {
@@ -7904,8 +7909,8 @@ var TmxLoader = function () {
                     return next();
                 }
 
-                var route = _path2.default.dirname(resource.url.replace(this.baseUrl, ''));
-                var tmxLoader = new TmxLoader(route);
+                var tmxLoader = new TmxLoader(resource.url);
+                var route = tmxLoader.route;
                 var loadOptions = tmxLoader.getImageLoadOptions(resource);
 
                 _tmxParser2.default.readFile = function (name, cb) {

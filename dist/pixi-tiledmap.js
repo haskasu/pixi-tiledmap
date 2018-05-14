@@ -7866,8 +7866,8 @@ var TmxLoader = function () {
 
     _createClass(TmxLoader, [{
         key: 'parseRoute',
-        value: function parseRoute(tmxUrl) {
-            return _path2.default.dirname(tmxUrl.replace(this.baseUrl, ''));
+        value: function parseRoute(loader, tmxUrl) {
+            return _path2.default.dirname(tmxUrl.replace(loader.baseUrl, ''));
         }
     }, {
         key: 'getImageLoadOptions',
@@ -7908,7 +7908,7 @@ var TmxLoader = function () {
                 }
 
                 var tmxLoader = new TmxLoader();
-                var route = tmxLoader.parseRoute(resource.url);
+                var route = tmxLoader.parseRoute(this, resource.url);
                 var loadOptions = tmxLoader.getImageLoadOptions(resource);
 
                 _tmxParser2.default.readFile = function (name, cb) {

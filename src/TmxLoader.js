@@ -3,8 +3,8 @@ import tmx from 'tmx-parser';
 
 export default class TmxLoader {
 
-    parseRoute(tmxUrl) {
-        return path.dirname(tmxUrl.replace(this.baseUrl, ''));
+    parseRoute(loader, tmxUrl) {
+        return path.dirname(tmxUrl.replace(loader.baseUrl, ''));
     }
 
     getImageLoadOptions(resource) {
@@ -42,7 +42,7 @@ export default class TmxLoader {
             }
 
             var tmxLoader = new TmxLoader();
-            const route = tmxLoader.parseRoute(resource.url);
+            const route = tmxLoader.parseRoute(this, resource.url);
             const loadOptions = tmxLoader.getImageLoadOptions(resource);
 
             tmx.readFile = (name, cb) => {

@@ -3,6 +3,10 @@ import tmx from 'tmx-parser';
 
 export default class TmxLoader {
 
+    constructor(route) {
+        this.route = route;
+    }
+
     getImageLoadOptions(resource) {
         return {
             crossOrigin: resource.crossOrigin,
@@ -17,6 +21,17 @@ export default class TmxLoader {
         }
     }
 
+    readFile(name, cb) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                cb(null, xmlHttp.responseText);
+            }
+        }
+        xmlHttp.open("GET", `${this.route}/${name}`, true); // true for asynchronous 
+        xmlHttp.send(null);
+    }
+
     static pixiMiddleware() {
         return function (resource, next) {
 
@@ -25,18 +40,22 @@ export default class TmxLoader {
                 !resource.data.children[0].getElementsByTagName('tileset')) {
                 return next();
             }
-   
-            var tmxLoader = new TmxLoader();
+
             const route = path.dirname(resource.url.replace(this.baseUrl, ''));
+            var tmxLoader = new TmxLoader(route);
             const loadOptions = tmxLoader.getImageLoadOptions(resource);
-    
+
+            tmx.readFile = (name, cb) => {
+                tmxLoader.readFile(name, cb);
+            };
+
             tmx.parse(resource.xhr.responseText, route, (err, map) => {
                 if (err) throw err;
-    
+
                 map.tileSets.forEach(tileset => {
                     tmxLoader.onLoadTileset(this, route, tileset, loadOptions);
                 });
-    
+
                 resource.data = map;
                 next();
             });

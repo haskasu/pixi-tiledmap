@@ -1,6 +1,8 @@
 import path from 'path';
 import tmx from 'tmx-parser';
 
+// haska: this file is deprecated. This library is using TmxLoader instead.
+
 export default () => {
     return function (resource, next) {
 
@@ -23,7 +25,7 @@ export default () => {
 
             map.tileSets.forEach(tileset => {
                 if (!(tileset.image.source in this.resources)) {
-                    if(/^(http:\/\/|https:\/\/)/.test(tileset.image.source)) {
+                    if(/^(http:\/\/|https:\/\/|\/|\/\/)/.test(tileset.image.source)) {
                         this.add(tileset.image.source, tileset.image.source, loadOptions);                        
                     } else {
                         this.add(tileset.image.source, `${route}/${tileset.image.source}`, loadOptions);

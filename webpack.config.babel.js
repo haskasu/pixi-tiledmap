@@ -1,5 +1,6 @@
 import path from 'path';
 import webpack from 'webpack';
+import copyPlugin from 'copy-webpack-plugin';
 
 export default {
     entry: {
@@ -25,7 +26,10 @@ export default {
         new webpack.optimize.UglifyJsPlugin({
             include: /\.min.js$/,
             sourceMap: true
-        })
+        }),
+        new copyPlugin([
+            {from: 'dist/pixi-tiledmap.min.*', to: '../example/browser', flatten: true}
+        ])
     ],
     devtool: 'source-map',
     node: {

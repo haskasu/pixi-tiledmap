@@ -7860,10 +7860,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var TmxLoader = function () {
-    function TmxLoader(tmxUrl) {
+    function TmxLoader() {
         _classCallCheck(this, TmxLoader);
-
-        this.route = this.parseRoute(tmxUrl);
     }
 
     _createClass(TmxLoader, [{
@@ -7896,7 +7894,7 @@ var TmxLoader = function () {
                     cb(null, xmlHttp.responseText);
                 }
             };
-            xmlHttp.open("GET", this.route + '/' + name, true); // true for asynchronous 
+            xmlHttp.open("GET", name, true); // true for asynchronous 
             xmlHttp.send(null);
         }
     }], [{
@@ -7909,15 +7907,15 @@ var TmxLoader = function () {
                     return next();
                 }
 
-                var tmxLoader = new TmxLoader(resource.url);
-                var route = tmxLoader.route;
+                var tmxLoader = new TmxLoader();
+                var route = tmxLoader.parseRoute(resource.url);
                 var loadOptions = tmxLoader.getImageLoadOptions(resource);
 
                 _tmxParser2.default.readFile = function (name, cb) {
                     tmxLoader.readFile(name, cb);
                 };
 
-                _tmxParser2.default.parse(resource.xhr.responseText, route, function (err, map) {
+                _tmxParser2.default.parse(resource.xhr.responseText, resource.url, function (err, map) {
                     if (err) throw err;
 
                     map.tileSets.forEach(function (tileset) {

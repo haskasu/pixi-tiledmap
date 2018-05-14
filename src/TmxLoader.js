@@ -3,10 +3,6 @@ import tmx from 'tmx-parser';
 
 export default class TmxLoader {
 
-    constructor(tmxUrl) {
-        this.route = this.parseRoute(tmxUrl);
-    }
-
     parseRoute(tmxUrl) {
         return path.dirname(tmxUrl.replace(this.baseUrl, ''));
     }
@@ -32,7 +28,7 @@ export default class TmxLoader {
                 cb(null, xmlHttp.responseText);
             }
         }
-        xmlHttp.open("GET", `${this.route}/${name}`, true); // true for asynchronous 
+        xmlHttp.open("GET", name, true); // true for asynchronous 
         xmlHttp.send(null);
     }
 
@@ -45,15 +41,15 @@ export default class TmxLoader {
                 return next();
             }
 
-            var tmxLoader = new TmxLoader(resource.url);
-            const route = tmxLoader.route;
+            var tmxLoader = new TmxLoader();
+            const route = tmxLoader.parseRoute(resource.url);
             const loadOptions = tmxLoader.getImageLoadOptions(resource);
 
             tmx.readFile = (name, cb) => {
                 tmxLoader.readFile(name, cb);
             };
 
-            tmx.parse(resource.xhr.responseText, route, (err, map) => {
+            tmx.parse(resource.xhr.responseText, resource.url, (err, map) => {
                 if (err) throw err;
 
                 map.tileSets.forEach(tileset => {

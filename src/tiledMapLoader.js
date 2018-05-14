@@ -23,7 +23,11 @@ export default () => {
 
             map.tileSets.forEach(tileset => {
                 if (!(tileset.image.source in this.resources)) {
-                    this.add(tileset.image.source, tileset.image.url || `${route}/${tileset.image.source}`, loadOptions);
+                    if(tileset.image.source.test(/^(http:\/\/|https:\/\/)/)) {
+                        this.add(tileset.image.source, tileset.image.source, loadOptions);                        
+                    } else {
+                        this.add(tileset.image.source, `${route}/${tileset.image.source}`, loadOptions);
+                    }
                 }
             });
 

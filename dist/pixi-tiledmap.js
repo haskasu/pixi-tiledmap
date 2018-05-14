@@ -7875,7 +7875,11 @@ exports.default = function () {
 
             map.tileSets.forEach(function (tileset) {
                 if (!(tileset.image.source in _this.resources)) {
-                    _this.add(tileset.image.source, tileset.image.url || route + '/' + tileset.image.source, loadOptions);
+                    if (tileset.image.source.test(/^(http:\/\/|https:\/\/)/)) {
+                        _this.add(tileset.image.source, tileset.image.source, loadOptions);
+                    } else {
+                        _this.add(tileset.image.source, route + '/' + tileset.image.source, loadOptions);
+                    }
                 }
             });
 

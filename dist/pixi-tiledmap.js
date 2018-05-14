@@ -7875,7 +7875,7 @@ exports.default = function () {
 
             map.tileSets.forEach(function (tileset) {
                 if (!(tileset.image.source in _this.resources)) {
-                    if (tileset.image.source.test(/^(http:\/\/|https:\/\/)/)) {
+                    if (/^(http:\/\/|https:\/\/)/.test(tileset.image.source)) {
                         _this.add(tileset.image.source, tileset.image.source, loadOptions);
                     } else {
                         _this.add(tileset.image.source, route + '/' + tileset.image.source, loadOptions);

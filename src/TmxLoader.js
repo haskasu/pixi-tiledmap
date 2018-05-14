@@ -1,4 +1,5 @@
 import path from 'path';
+import url from 'url';
 import tmx from 'tmx-parser';
 
 export default class TmxLoader {
@@ -47,6 +48,18 @@ export default class TmxLoader {
 
             tmx.readFile = (name, cb) => {
                 tmxLoader.readFile(name, cb);
+            };
+
+            tmx.resolveTileSet = (unresolvedTileSet, cb) => {
+                var target = url.resolve(pathToDir, unresolvedTileSet.source);
+                tmx.parseFile(target, function (err, resolvedTileSet) {
+                    if (err) {
+                        cb(err);
+                        return;
+                    }
+                    resolvedTileSet.mergeTo(unresolvedTileSet);
+                    cb();
+                });
             };
 
             tmx.parse(resource.xhr.responseText, resource.url, (err, map) => {
